@@ -13,13 +13,14 @@ def weixin(request):
             return HttpResponse(params['echostr'])
         else:
             reply = """<xml>
-				<ToUserName><![CDATA[%s]]></ToUserName>
-			    <FromUserName><![CDATA[%s]]></FromUserName>
+                <ToUserName><![CDATA[%s]]></ToUserName>
+                <FromUserName><![CDATA[%s]]></FromUserName>
                 <CreateTime>%s</CreateTime>
                 <MsgType><![CDATA[text]]></MsgType>
                 <Content><![CDATA[%s]]></Content>
                 <FuncFlag>0</FuncFlag>
                 </xml>"""
+
             if request.raw_post_data:
                 xml = ET.fromstring(request.raw_post_data)
                 content = xml.find("Content").text
