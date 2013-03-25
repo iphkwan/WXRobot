@@ -1,44 +1,70 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 from django.http import HttpResponse
-import hashlib, time, re
-from xml.etree import ElementTree as ET
-      
-def weixin(request):
-    token = "hugoye"
-    params = request.GET
-    args = [token, params['timestamp'], params['nonce']]
-    args.sort()
-    if hashlib.sha1("".join(args)).hexdigest() == params['signature']:
-        if params.has_key('echostr'):
-            return HttpResponse(params['echostr'])
-        else:
-            reply = """<xml>
-                <ToUserName><![CDATA[%s]]></ToUserName>
-                <FromUserName><![CDATA[%s]]></FromUserName>
-                <CreateTime>%s</CreateTime>
-                <MsgType><![CDATA[text]]></MsgType>
-                <Content><![CDATA[%s]]></Content>
-                <FuncFlag>0</FuncFlag>
-                </xml>"""
+from django.template import RequestContext, Template
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.encoding import smart_str, smart_unicode
 
-            if request.raw_post_data:
-                xml = ET.fromstring(request.raw_post_data)
-                content = xml.find("Content").text
-                fromUserName = xml.find("ToUserName").text
-                toUserName = xml.find("FromUserName").text
-                postTime = str(int(time.time()))
-                if not content:
-                    return HttpResponse(reply % (toUserName, fromUserName,
-                        postTime, "Please try to input some command!"))
-                if content == "hello":
-                    return HttpResponse(reply % (toUserName, fromUserName,
-                        postTime, "Hello world!"))
-                else:
-                    return HttpResponse(reply % (toUserName, fromUserName,
-                        postTime, "Please try to input some other command!")) 
-            else:
-                return HttpResponse("Invalid Request")
+import xml.etree.ElementTree as ET
+import urllib, urllib2, time, hashlib
+
+TOKEN = "hugoye"
+
+@csrf_exempt
+def handleRequest(request):
+    if request.method == 'GET':
+        response = HttpResponse(checkSignature(request), content_type =
+                "text/plain")
+        return response
+    elif request.method == 'POST':
+        response = HttpResponse(responseMsg(request), content_type =
+                "text/plain")
+        return reponse
     else:
         return HttpResponse("Invalid Request")
 
+def checkSignature(request):
+    global TOKEN
+    signature = request.GET.get("signature", None)
+    timestamp = request.GET.get("timestamp", None)
+    nonce = request.GET.get("nonce", None)
+    echoStr = request.GET.get("echoStr", None)
 
+    token = TOKEN
+    tmplist = [token, timestamp, nonce]
+    tmplist.sort()
+    tmpstr = "%s%s%s" % tuple(tmplist)
+    tmpstr = hashlib.sha1(tmpstr).hexdigest()
+    if tmpstr == signature:
+        return echoStr
+    else:
+        return "Hehe!"
+
+def responseMsg(request):
+    rawStr = smart_str(request.raw_post_data)
+    msg = paraseMsgXml(ET.fromstring(rawStr))
+
+    queryStr = msg.get('Content', 'input nothing')
+
+    replyContent = "Hello world!"
+    return getReplyXml(msg, replyContent)
+
+def paraseMsgXml(rootElem):
+    msg = {}
+    if rootElem.tag == 'xml':
+        for child in rootElem:
+            msg[child.tag] = smart_str(child.text)
+    return msg
+
+def getReplyXml(msg, replyContent):
+    reply ="""<xml>
+        <ToUserName><![CDATA[%s]]></ToUserName>
+        <FromUserName><![CDATA[%s]]></FromUserName>
+        <CreateTime>%s</CreateTime>
+        <MsgType><![CDATA[%s]]></MsgType>
+        <Content><![CDATA[%s]]></Content>
+        <FuncFlag>0</FuncFlag>
+        </xml>"""
+
+    reply = reply % (msg['FromUserName'],msg['ToUserName'],str(int(time.time())),'text',replyContent)
+
+    return reply
