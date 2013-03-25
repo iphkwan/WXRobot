@@ -41,15 +41,15 @@ def checkSignature(request):
 
 def responseMsg(request):
     rawStr = smart_str(request.raw_post_data)
-    print rawStr
     msg = paraseMsgXml(ET.fromstring(rawStr))
-    print msg
 
     queryStr = msg.get('Content', 'input nothing')
     print queryStr
 
     replyContent = "Hello world!"
-    return getReplyXml(msg, replyContent)
+    reply = getReplyXml(msg, replyContent)
+    print paraseMsgXml(reply)
+    return reply
 
 def paraseMsgXml(rootElem):
     msg = {}
