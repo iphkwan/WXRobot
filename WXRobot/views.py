@@ -31,9 +31,8 @@ def weixin(request):
                 if content == "Hello2BizUser":
                     return HttpResponse(reply % (toUserName, fromUserName, postTime, "查询成绩绩点请到http://chajidian.sinaapp.com/ 本微信更多功能开发中..."))
                 else:
-                    return HttpResponse(reply % (toUserName, fromUserName, postTime, "暂不支持任何命令交互哦,功能开发中..."))
-
-			else:
+                    return HttpResponse(reply % (toUserName, fromUserName, postTime, "暂不支持任何命令交互哦,功能开发中...")) 
+            else:
                 return HttpResponse("Invalid Request")
     else:
         return HttpResponse("Invalid Request")
