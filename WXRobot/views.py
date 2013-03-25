@@ -48,7 +48,6 @@ def responseMsg(request):
 
     replyContent = "Hello world!"
     reply = getReplyXml(msg, replyContent)
-    print paraseMsgXml(reply)
     return reply
 
 def paraseMsgXml(rootElem):
@@ -60,7 +59,8 @@ def paraseMsgXml(rootElem):
 
 def getReplyXml(msg, replyContent):
     reply ="<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[%s]]></MsgType><Content><![CDATA[%s]]></Content><FuncFlag>0</FuncFlag></xml>";
-
+    print reply
     reply = reply % (msg['FromUserName'],msg['ToUserName'],str(int(time.time())),'text',replyContent)
+    print reply
 
     return reply
