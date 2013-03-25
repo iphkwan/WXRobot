@@ -17,7 +17,7 @@ def handleRequest(request):
         return response
     elif request.method == 'POST':
         response = HttpResponse(responseMsg(request), content_type =
-                "text/plain")
+                "application/xml")
         return reponse
     else:
         return HttpResponse("Invalid Request")
@@ -44,11 +44,9 @@ def responseMsg(request):
     msg = paraseMsgXml(ET.fromstring(rawStr))
 
     queryStr = msg.get('Content', 'input nothing')
-    print queryStr
 
     replyContent = "Hello world!"
-    reply = getReplyXml(msg, replyContent)
-    return reply
+    return getReplyXml(msg, replyContent)
 
 def paraseMsgXml(rootElem):
     msg = {}
@@ -58,9 +56,15 @@ def paraseMsgXml(rootElem):
     return msg
 
 def getReplyXml(msg, replyContent):
-    reply ="<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[%s]]></MsgType><Content><![CDATA[%s]]></Content><FuncFlag>0</FuncFlag></xml>";
-    print reply
+    reply ="""<xml>
+        <ToUserName><![CDATA[%s]]></ToUserName>
+        <FromUserName><![CDATA[%s]]></FromUserName>
+        <CreateTime>%s</CreateTime>
+        <MsgType><![CDATA[%s]]></MsgType>
+        <Content><![CDATA[%s]]></Content>
+        <FuncFlag>0</FuncFlag>
+        </xml>"""
+
     reply = reply % (msg['FromUserName'],msg['ToUserName'],str(int(time.time())),'text',replyContent)
-    print reply
 
     return reply
