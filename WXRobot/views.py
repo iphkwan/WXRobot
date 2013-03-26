@@ -10,22 +10,20 @@ import urllib, urllib2, time, hashlib
 
 
 TOKEN = "hugoye"
+simsimi = SimSimi()
 
+def handleMsg(data):
+    return simsimi.chat(data)
 
-#def handleMsg(data):
-#    simsimi = SimSimi()
-#    return simsimi.chat(data)
-
-#def testMsg(request):
-#    simsimi = SimSimi()
-#    if request.method == 'GET':
-#        data = request.GET.get("data", 'hello')
-#        reply = simsimi.chat(data)
+def testMsg(request):
+    if request.method == 'GET':
+        data = request.GET.get("data", 'hello')
+        reply = simsimi.chat(data)
         #reply = smart_unicode(reply)
         #print reply
-#        return HttpResponse(reply, content_type = "text/plain; charset=UTF-8")
-#    else:
-#        return HttpResponse("Invalid Request")
+        return HttpResponse(reply, content_type = "text/plain; charset=UTF-8")
+    else:
+        return HttpResponse("Invalid Request")
 
 
 @csrf_exempt
@@ -63,10 +61,10 @@ def responseMsg(request):
     msg = paraseMsgXml(ET.fromstring(rawStr))
 
     queryStr = msg.get('Content', 'input nothing')
-    print queryStr
+    #print queryStr
 
-    replyContent = "Hello world!"
-    #replyContent = handleMsg(queryStr)
+    #replyContent = "Hello world!"
+    replyContent = handleMsg(queryStr)
     print replyContent
 
     return getReplyXml(msg, replyContent)
