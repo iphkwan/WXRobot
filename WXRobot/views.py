@@ -111,8 +111,8 @@ def responseMsg(request):
     queryStr = msg.get('Content', 'input nothing')
     print queryStr
 
-    #replyContent = "Hello world!"
-    replyContent = handleMsg(queryStr)
+    replyContent = "Hello world!"
+    #replyContent = handleMsg(queryStr)
     print replyContent
 
     return getReplyXml(msg, replyContent)
