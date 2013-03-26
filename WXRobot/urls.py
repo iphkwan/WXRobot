@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'WXRobot.views.home', name='home'),
     url(r'^$', 'WXRobot.views.handleRequest'),
+    url(r'^test/$', 'WXRobot.views.testMsg'),
     # url(r'^WXRobot/', include('WXRobot.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

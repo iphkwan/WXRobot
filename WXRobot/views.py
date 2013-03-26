@@ -57,10 +57,21 @@ class SimSimi:
         else:
             return 'What?'
 
-simsimi = SimSimi()
 
 def handleMsg(data):
+    simsimi = SimSimi()
     return simsimi.chat(data)
+
+def testMsg(request):
+    simsimi = SimSimi()
+    if request.method == 'GET':
+        data = request.GET.get("data", 'hello')
+        reply = simsimi.chat(data)
+        #reply = smart_unicode(reply)
+        #print reply
+        return HttpResponse(reply, content_type = "text/plain; charset=UTF-8")
+    else:
+        return HttpResponse("Invalid Request")
 
 
 @csrf_exempt
