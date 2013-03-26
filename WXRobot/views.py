@@ -98,9 +98,11 @@ def responseMsg(request):
     msg = paraseMsgXml(ET.fromstring(rawStr))
 
     queryStr = msg.get('Content', 'input nothing')
+    print queryStr
 
     #replyContent = "Hello world!"
     replyContent = handleMsg(queryStr)
+    print replyContent
 
     return getReplyXml(msg, replyContent)
 
